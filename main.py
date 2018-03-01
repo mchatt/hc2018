@@ -1,6 +1,7 @@
 import sys
 import argparse
 import time
+import logging
 
 def move_by_one(A, B):
   if A[0] != B[0]:
@@ -15,7 +16,8 @@ def move_by_one(A, B):
       return [A[0], A[1]-1]
 
 class Car:
-  def __init__(self):
+  def __init__(self, i):
+    self.i = int(i)
     self.free = True
     self.position = [0,0]
     self.currentRide = None
@@ -28,16 +30,20 @@ class Car:
 
   def one_step(self):
     if self.free or self.currentRide == None:
+      logging.debug(self.i, "I am free, loosing one step !!")
       self.n = self.n+1
       return self
       
     if self.position == self.currentRide.origin and self.n < self.currentRide.t1:
+      logging.debug(self.i, "Arrived to origin but waiting for my ride")
       self.n = self.n+1
       return self
 
     if self.toDest:
+      logging.debug(self.i, "Driving to destination")
       self.position = move_by_one(self.position, self.currentRide.dest)
     else:
+      logging.debug(self.i, "Driving to origin of my ride")
       self.position = move_by_one(self.position, self.currentRide.origin)
       if self.position == self.currentRide.origin:
         self.toDest = True
@@ -83,7 +89,7 @@ class State:
       for i in range(self.nb_rides):
         tmp = content[i].split('\n')[0].split()
         self.rides.append(Ride(i, tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]))
-      self.cars = [Car() for i in range(self.nb_car)]
+      self.cars = [Car(i) for i in range(self.nb_car)]
     return self
         
   def writefile(self, outfile):
@@ -107,17 +113,19 @@ def compute(state):
     for c in state.cars:
       if not state.rides:
         return
-      c.one_step()
-      c.arrived()
       # assign a ride to a vehicle
       if c.free:
         c.currentRide = state.rides.pop(0)
         c.free = False
-        # my_rides = sorted(state.rides, key=lambda x: 1, reverse=True)
-        # best_ride = my_rides[0]
-        # state.rides.remove(best_ride)
-        # c.free = False
-        # c.currentRide = best_ride
+    # my_rides = sorted(state.rides, key=lambda x: 1, reverse=True)
+    # best_ride = my_rides[0]
+    # state.rides.remove(best_ride)
+    # c.free = False
+    # c.currentRide = best_ride
+
+
+      c.one_step()
+      c.arrived()
 
 ####################################################################################################
 
