@@ -90,7 +90,13 @@ def compute(state):
       c.one_step()
       c.arrived()
     # assign a ride to a vehicle
-    
+    for c in state.cars:
+      if c.free:
+        my_rides = sorted(state.rides, key=lambda x: 1, reverse=True)
+        best_ride = my_rides[0]
+        state.rides.remove(best_ride)
+        c.free = False
+        c.currentRide = best_ride
 
 ####################################################################################################
 
