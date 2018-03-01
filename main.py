@@ -2,37 +2,51 @@ import sys
 import argparse
 import time
 
+def move_by_one(A, B):
+  if A[0] != B[0]:
+    if A[0] < B[0]:
+      return [A[0]+1, A[1]]
+    else:
+      return [A[0]-1, A[1]]
+  else:
+    if A[1] < B[1]:
+      return [A[0], A[1]+1]
+    else:
+      return [A[0], A[1]-1]
+
 class Car:
   def __init__(self):
     self.free = True
     self.position = [0,0]
     self.currentRide = None
+    self.toDest = False
     self.list_rides = []
     self.n = 0
 
   def __repr__(self):
-    return str(len(self.list_rides))+' '+' '.join(str(self.list_rides))
+    return str(len(self.list_rides))+' '+' '.join(map(str, self.list_rides))
 
   def one_step(self):
-    if self.free or self.currentRide == None or self.n < self.currentRide.t1:
+    if self.free or self.currentRide == None:
+      self.n = self.n+1
+      return self
+      
+    if self.position == self.currentRide.origin and self.n < self.currentRide.t1:
+      self.n = self.n+1
       return self
 
+    if self.toDest:
+      self.position = move_by_one(self.position, self.currentRide.dest)
     else:
-      self.n = self.n+1
-      if self.position[0] != self.currentRide.x:
-        if self.position[0] < self.currentRide.x:
-          self.position = [self.position[0]+1, self.position[1]]
-        else:
-          self.position = [self.position[0]-1, self.position[1]]
-      else:
-        if self.position[1] < self.currentRide.y:
-          self.position = [self.position[0], self.position[1]+1]
-        else:
-          self.position = [self.position[0], self.position[1]-1]
+      self.position = move_by_one(self.position, self.currentRide.origin)
+      if self.position == self.currentRide.origin:
+        self.toDest = True
+
+    self.n = self.n+1
     return self
 
   def arrived(self):
-    if not self.free and self.position == [self.currentRide.x, self.currentRide.y]:
+    if not self.free and self.position == self.currentRide.dest:
       self.list_rides.append(self.currentRide.n)
       self.currentRide = None
       self.free = True
@@ -40,10 +54,8 @@ class Car:
 class Ride:
   def __init__(self, n, a, b, x, y, t1, t2):
     self.n = int(n)
-    self.a = int(a)
-    self.b = int(b)
-    self.x = int(x)
-    self.y = int(y)
+    self.origin = [int(a), int(b)]
+    self.dest = [int(x), int(y)]
     self.t1 = int(t1)
     self.t2 = int(t2)
 
@@ -93,10 +105,11 @@ def compute(state):
     # move the car in the map
     # if the car arrived to it destination, turn the free flag to True
     for c in state.cars:
+      if not state.rides:
+        return
       c.one_step()
       c.arrived()
-    # assign a ride to a vehicle
-    for c in state.cars:
+      # assign a ride to a vehicle
       if c.free:
         c.currentRide = state.rides.pop(0)
         c.free = False
