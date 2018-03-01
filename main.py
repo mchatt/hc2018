@@ -1,4 +1,4 @@
-mport sys
+import sys
 import argparse
 import time
 
@@ -12,7 +12,7 @@ class Ride:
     self.t1 = t1
     self.t2 = t2
 
-class State:
+class Input:
   '''
   Class representing the input data
   '''
@@ -21,16 +21,16 @@ class State:
     self.C = 0
     self.vehicules = 0
     self.nb_rides = 0
-    self.bonus = []
+    self.bonus = 0
     self.step = 0
     self.rides = []
 
   def parse(self, inputFile):
     with open(inputFile) as f:
       content = f.readlines()
-      self.R, self.C, self.vehicules, self.rides, self.bonus, self.step = [int(x) for x in content[0].split('\n')[0].split()]
-      for i in range(1, len(content)):
-        tmp = list(content[i].split('\n')[0]
+      self.R, self.C, self.vehicules, self.nb_rides, self.bonus, self.step = [int(x) for x in content[0].split('\n')[0].split()]
+      for i in range(self.nb_rides):
+        tmp = list(content[i].split('\n')[0])
         self.rides.append(Ride(i, tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]))
     return self
 
