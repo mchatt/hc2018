@@ -14,7 +14,10 @@ class Car:
     return str(len(self.list_rides))+' '+' '.join(self.list_rides)
 
   def one_step(self):
-    if not self.free or self.n < self.currentRide.t1:
+    if self.free or self.currentRide == None or self.n < self.currentRide.t1:
+      return self
+
+    else:
       self.n = self.n+1
       if self.position[0] != self.currentRide.x:
         if self.position[0] < self.currentRide.x:
@@ -43,6 +46,9 @@ class Ride:
     self.y = y
     self.t1 = t1
     self.t2 = t2
+
+  def __repr__(self):
+    return "%d %d %d %d %d %d" % (self.a, self.b, self.x, self.y, self.t1, self.t2)
 
 class State:
   '''
@@ -92,11 +98,13 @@ def compute(state):
     # assign a ride to a vehicle
     for c in state.cars:
       if c.free:
-        my_rides = sorted(state.rides, key=lambda x: 1, reverse=True)
-        best_ride = my_rides[0]
-        state.rides.remove(best_ride)
+        c.currentRide = state.rides.pop(0)
         c.free = False
-        c.currentRide = best_ride
+        # my_rides = sorted(state.rides, key=lambda x: 1, reverse=True)
+        # best_ride = my_rides[0]
+        # state.rides.remove(best_ride)
+        # c.free = False
+        # c.currentRide = best_ride
 
 ####################################################################################################
 
