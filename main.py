@@ -8,12 +8,14 @@ class Car:
     self.position = [0,0]
     self.currentRide = None
     self.list_rides = []
+    self.n = 0
 
   def __repr__(self):
-    return str(len(self.list_rides))+' '.join(self.list_rides)
+    return str(len(self.list_rides))+' '+' '.join(self.list_rides)
 
   def one_step(self):
-    if not self.free:
+    if not self.free or self.n < self.currentRide.t1:
+      self.n = self.n+1
       if self.position[0] != self.currentRide.x:
         if self.position[0] < self.currentRide.x:
           self.position = [self.position[0]+1, self.position[1]]
@@ -87,7 +89,6 @@ def compute(state):
     for c in state.cars:
       c.one_step()
       c.arrived()
-
     # assign a ride to a vehicle
     
 
