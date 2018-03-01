@@ -1,24 +1,37 @@
-import sys
+mport sys
 import argparse
 import time
 
-class Input:
+class Ride:
+  def __init__(self, n, a, b, x, y, t1, t2):
+    self.n = n
+    self.a = a
+    self.b = b
+    self.x = x
+    self.y = y
+    self.t1 = t1
+    self.t2 = t2
+
+class State:
   '''
   Class representing the input data
   '''
   def __init__(self):
     self.R = 0
     self.C = 0
-    self.L = 0
-    self.H = 0
-    self.M = []
+    self.vehicules = 0
+    self.nb_rides = 0
+    self.bonus = []
+    self.step = 0
+    self.rides = []
 
   def parse(self, inputFile):
     with open(inputFile) as f:
       content = f.readlines()
-      self.R, self.C, self.L, self.H = [int(x) for x in content[0].split('\n')[0].split()]
+      self.R, self.C, self.vehicules, self.rides, self.bonus, self.step = [int(x) for x in content[0].split('\n')[0].split()]
       for i in range(1, len(content)):
-        self.M.append(list(content[i].split('\n')[0]))
+        tmp = list(content[i].split('\n')[0]
+        self.rides.append(Ride(i, tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]))
     return self
 
   def __str__(self):
