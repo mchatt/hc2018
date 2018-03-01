@@ -29,23 +29,17 @@ class Car:
     return str(len(self.list_rides))+' '+' '.join(map(str, self.list_rides))
 
   def one_step(self):
-    logging.debug("%d, %s {{%s}}" % (self.i, self.position, self.currentRide))
-    
     if self.free or self.currentRide == None:
-      logging.debug("%d, I am free, loosing one step !!" % self.i)
       self.n = self.n+1
       return self
       
     if self.position == self.currentRide.origin and self.n < self.currentRide.t1:
-      logging.debug("Arrived to origin but waiting for my ride")
       self.n = self.n+1
       return self
 
     if self.toDest:
-      logging.debug("Driving to destination")
       self.position = move_by_one(self.position, self.currentRide.dest)
     else:
-      logging.debug("Driving to origin of my ride")
       self.position = move_by_one(self.position, self.currentRide.origin)
       if self.position == self.currentRide.origin:
         self.toDest = True
@@ -104,6 +98,8 @@ class State:
 
 ###################################################################################################
 
+def dist(A, B):
+  return abs(B[0]-A[0]) + abs(B[1]-A[1])
 
 def compute(state):
   '''
@@ -115,13 +111,11 @@ def compute(state):
     for c in state.cars:
       # assign a ride to a vehicle
       if c.free and state.rides:
-        c.currentRide = state.rides.pop(0)
+        my_rides = sorted(state.rides, key=lambda x: dist(c.position, x.origin)+dist(x.origin, x.dest)+(dist(c.position, x.origin)+i-x.t1), reverse=True)
+        best_ride = my_rides[0]
+        state.rides.remove(best_ride)
         c.free = False
-    # my_rides = sorted(state.rides, key=lambda x: 1, reverse=True)
-    # best_ride = my_rides[0]
-    # state.rides.remove(best_ride)
-    # c.free = False
-    # c.currentRide = best_ride
+        c.currentRide = best_ride
 
 
       c.one_step()
@@ -131,7 +125,7 @@ def compute(state):
 
 
 if __name__ == "__main__":
-  logging.basicConfig(filename='myapp.log', level=logging.DEBUG)
+  logging.basicConfig(filename='myapp.log', level=logging.ERROR)
   parser = argparse.ArgumentParser()
   parser.add_argument('-i', '--input', dest='inputfile', required=True, help='Path to input file')
   parser.add_argument('-o', '--outputfile', dest='outputfile', required=True, help='Path to output file')
