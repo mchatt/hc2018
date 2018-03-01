@@ -29,21 +29,23 @@ class Car:
     return str(len(self.list_rides))+' '+' '.join(map(str, self.list_rides))
 
   def one_step(self):
+    logging.debug("%d, %s {{%s}}" % (self.i, self.position, self.currentRide))
+    
     if self.free or self.currentRide == None:
-      logging.debug(self.i, "I am free, loosing one step !!")
+      logging.debug("%d, I am free, loosing one step !!" % self.i)
       self.n = self.n+1
       return self
       
     if self.position == self.currentRide.origin and self.n < self.currentRide.t1:
-      logging.debug(self.i, "Arrived to origin but waiting for my ride")
+      logging.debug("Arrived to origin but waiting for my ride")
       self.n = self.n+1
       return self
 
     if self.toDest:
-      logging.debug(self.i, "Driving to destination")
+      logging.debug("Driving to destination")
       self.position = move_by_one(self.position, self.currentRide.dest)
     else:
-      logging.debug(self.i, "Driving to origin of my ride")
+      logging.debug("Driving to origin of my ride")
       self.position = move_by_one(self.position, self.currentRide.origin)
       if self.position == self.currentRide.origin:
         self.toDest = True
@@ -66,7 +68,7 @@ class Ride:
     self.t2 = int(t2)
 
   def __repr__(self):
-    return "%d %d %d %d %d %d" % (self.a, self.b, self.x, self.y, self.t1, self.t2)
+    return "%s %s %d %d" % (self.origin, self.dest, self.t1, self.t2)
 
 class State:
   '''
@@ -87,7 +89,7 @@ class State:
       content = f.readlines()
       self.R, self.C, self.nb_car, self.nb_rides, self.bonus, self.step = [int(x) for x in content[0].split('\n')[0].split()]
       for i in range(self.nb_rides):
-        tmp = content[i].split('\n')[0].split()
+        tmp = content[i+1].split('\n')[0].split()
         self.rides.append(Ride(i, tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]))
       self.cars = [Car(i) for i in range(self.nb_car)]
     return self
@@ -111,10 +113,8 @@ def compute(state):
     # move the car in the map
     # if the car arrived to it destination, turn the free flag to True
     for c in state.cars:
-      if not state.rides:
-        return
       # assign a ride to a vehicle
-      if c.free:
+      if c.free and state.rides:
         c.currentRide = state.rides.pop(0)
         c.free = False
     # my_rides = sorted(state.rides, key=lambda x: 1, reverse=True)
@@ -131,6 +131,7 @@ def compute(state):
 
 
 if __name__ == "__main__":
+  logging.basicConfig(filename='myapp.log', level=logging.DEBUG)
   parser = argparse.ArgumentParser()
   parser.add_argument('-i', '--input', dest='inputfile', required=True, help='Path to input file')
   parser.add_argument('-o', '--outputfile', dest='outputfile', required=True, help='Path to output file')
