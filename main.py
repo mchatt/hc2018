@@ -69,7 +69,7 @@ class State:
       content = f.readlines()
       self.R, self.C, self.nb_car, self.nb_rides, self.bonus, self.step = [int(x) for x in content[0].split('\n')[0].split()]
       for i in range(self.nb_rides):
-        tmp = content[i].split('\n')[0]
+        tmp = content[i].split('\n')[0].split()
         self.rides.append(Ride(i, tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]))
       self.cars = [Car() for i in range(self.nb_car)]
     return self
