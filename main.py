@@ -11,7 +11,7 @@ class Car:
     self.n = 0
 
   def __repr__(self):
-    return str(len(self.list_rides))+' '+' '.join(self.list_rides)
+    return str(len(self.list_rides))+' '+' '.join(str(self.list_rides))
 
   def one_step(self):
     if self.free or self.currentRide == None or self.n < self.currentRide.t1:
@@ -39,13 +39,13 @@ class Car:
 
 class Ride:
   def __init__(self, n, a, b, x, y, t1, t2):
-    self.n = n
-    self.a = a
-    self.b = b
-    self.x = x
-    self.y = y
-    self.t1 = t1
-    self.t2 = t2
+    self.n = int(n)
+    self.a = int(a)
+    self.b = int(b)
+    self.x = int(x)
+    self.y = int(y)
+    self.t1 = int(t1)
+    self.t2 = int(t2)
 
   def __repr__(self):
     return "%d %d %d %d %d %d" % (self.a, self.b, self.x, self.y, self.t1, self.t2)
@@ -69,7 +69,7 @@ class State:
       content = f.readlines()
       self.R, self.C, self.nb_car, self.nb_rides, self.bonus, self.step = [int(x) for x in content[0].split('\n')[0].split()]
       for i in range(self.nb_rides):
-        tmp = list(content[i].split('\n')[0])
+        tmp = content[i].split('\n')[0]
         self.rides.append(Ride(i, tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]))
       self.cars = [Car() for i in range(self.nb_car)]
     return self
