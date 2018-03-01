@@ -68,6 +68,7 @@ class State:
         
   def writefile(self, outfile):
     f = open(outfile, 'w')
+
     for s in self.cars:
       f.write(str(s)+"\n")
     f.close()
