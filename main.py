@@ -19,7 +19,7 @@ class Ride:
     self.t1 = t1
     self.t2 = t2
 
-class Input:
+class State:
   '''
   Class representing the input data
   '''
@@ -31,6 +31,7 @@ class Input:
     self.bonus = 0
     self.step = 0
     self.rides = []
+    self.cars = None
 
   def parse(self, inputFile):
     with open(inputFile) as f:
@@ -39,6 +40,7 @@ class Input:
       for i in range(self.nb_rides):
         tmp = list(content[i].split('\n')[0])
         self.rides.append(Ride(i, tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]))
+      self.cars = [Car() for i in range(self.nb_car)]
     return self
 
   def __str__(self):
@@ -95,6 +97,6 @@ if __name__ == "__main__":
   inputfile = args.inputfile
   outputfile = args.outputfile
 
-  inp = Input().parse(inputfile)
+  inp = State().parse(inputfile)
   output = compute(inp)
   output.formatOutput(outputfile)
