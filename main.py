@@ -10,7 +10,7 @@ class Car:
     self.list_rides = []
 
   def __repr__(self):
-    return len(self.list_rides)+' '.join(self.list_rides)
+    return str(len(self.list_rides))+' '.join(self.list_rides)
 
   def one_step(self):
     if not self.free:
@@ -76,18 +76,19 @@ class State:
 ###################################################################################################
 
 
-def compute(inp):
+def compute(state):
   '''
   Implementation of the computing logic
   '''
-  for i in range(inp.step):
-    print(i)
+  for i in range(state.step):
     # move the car in the map
-
     # if the car arrived to it destination, turn the free flag to True
+    for c in state.cars:
+      c.one_step()
+      c.arrived()
 
     # assign a ride to a vehicle
-
+    
 
 ####################################################################################################
 
