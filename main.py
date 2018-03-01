@@ -9,6 +9,29 @@ class Car:
     self.currentRide = None
     self.list_rides = []
 
+  def __repr__(self):
+    return len(self.list_rides)+' '.join(self.list_rides)
+
+  def one_step(self):
+    if not self.free:
+      if self.position[0] != self.currentRide.x:
+        if self.position[0] < self.currentRide.x:
+          self.position = [self.position[0]+1, self.position[1]]
+        else:
+          self.position = [self.position[0]-1, self.position[1]]
+      else:
+        if self.position[1] < self.currentRide.y:
+          self.position = [self.position[0], self.position[1]+1]
+        else:
+          self.position = [self.position[0], self.position[1]-1]
+    return self
+
+  def arrived(self):
+    if not self.free and self.position == [self.currentRide.x, self.currentRide.y]:
+      self.list_rides.append(self.currentRide.n)
+      self.currentRide = None
+      self.free = True
+
 class Ride:
   def __init__(self, n, a, b, x, y, t1, t2):
     self.n = n
@@ -42,32 +65,12 @@ class State:
         self.rides.append(Ride(i, tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]))
       self.cars = [Car() for i in range(self.nb_car)]
     return self
-
-  def __str__(self):
-    p = ''
-    for x in self.M:
-      p += str(x) + '\n'
-    return '%d %d %d %d\n%s' % (self.R, self.C, self.L, self.H, p)
-
-# class Output:
-#   '''
-#   Class representing the output data
-#   '''
-#   def __init__(self):
-#     self.paires = [] #list of slices
-
-#   def __str__(self):
-#     p = 'print Output {%d}\n' % len(self.paires)
-#     for x in self.paires:
-#       p += str(x) + '\n'
-#     return p
-
-#   def formatOutput(self, outputFile):
-#     f = open(outputFile, 'w')
-#     f.write('%d\n' % len(self.paires))
-#     for p in self.paires :
-#       f.write(' '.join([str(x) for x in p]))
-#     f.close()
+        
+  def writefile(self, outfile):
+    f = open(outfile, 'w')
+    for s in self.cars:
+      f.write(str(s)+"\n")
+    f.close()
 
 
 ###################################################################################################
@@ -97,6 +100,6 @@ if __name__ == "__main__":
   inputfile = args.inputfile
   outputfile = args.outputfile
 
-  inp = State().parse(inputfile)
-  output = compute(inp)
-  output.formatOutput(outputfile)
+  state = State().parse(inputfile)
+  compute(state)
+  state.writefile(outputfile)
